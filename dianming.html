@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>群點名</title>
+    <script>
+        //total 是闪动总次数
+        const TOTAL = 5;
+        //interval 是闪动间隔 1000 = 1s
+        const INTERVAL = 1000;
+        //changecolor_interval 是背景色变化的间隔 1000 = 1s
+        const CHANGECOLOR_INTERCAL = 500;
+        var changeback = 0;
+        var lifetime = TOTAL + 1;
+        var colors = ["#FF0000", "#FF00FF", "#FF1493", "#EF0000", "#EE3A8C", "#EE82E"]
+        var t1 = setInterval(dorandom, INTERVAL);
+        var t2 = setInterval(changeBackColor, CHANGECOLOR_INTERCAL);
+        function dorandom() {
+            //通过 users.push("名字"); 增加成员； 同一成员多次加入，可提升概率。名字长度尽量少于7个字
+            var users = [];
+            users.push("ygy");
+            users.push("33");
+            users.push("萌豚");
+            users.push("ob");
+            users.push("念念");
+            users.push("狗哥");
+            users.push("狐狸崽");
+            var num = Math.floor(Math.random() * users.length);
+            if (lifetime == TOTAL + 1) {
+                return;
+            }
+            if (lifetime > 0) {
+                document.getElementById("field1").innerHTML = users[num];
+            }
+            lifetime--;
+        }
+
+        function changeBackColor() {
+            if (lifetime < 0) {
+                var colorNum = changeback % colors.length;
+                document.getElementById("back").style.backgroundColor = colors[colorNum];
+                document.getElementById("start").innerHTML = "重置";
+                changeback++;
+            }
+        }
+
+        function start() {
+            if (lifetime == TOTAL + 1) {
+                lifetime--;
+                document.getElementById("start").innerHTML = "点名中";
+            } else {
+                document.getElementById("back").style.backgroundColor = "#1c8f8c";
+                lifetime = TOTAL + 1
+                document.getElementById("start").innerHTML = "开始点名!";
+                document.getElementById("field1").innerHTML = "Go";
+            }
+        }
+
+    </script>
+    <style type="text/css">
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background-color: #1c8f8c;
+            /* background-color: #EE5C42; */
+            /* margin: 0; */
+            font-family: "Varela Round", sans-serif;
+            text-align: center;
+        }
+
+        .text__error {
+            position: relative;
+            bottom: 0;
+            display: block;
+            font-size: 25px;
+            margin: 0;
+            text-align: center;
+            box-sizing: border-box;
+            color: #fefefe;
+        }
+
+        .status-code {
+            position: relative;
+            justify-content: space-between;
+            width: 1000px;
+            height: 300px;
+            max-width: 1000px;
+            text-align: center;
+            margin: auto;
+        }
+
+        .status-code p {
+            font-size: 150px;
+            color: #fefefe;
+            opacity: 0.8;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body id="back">
+
+    <div class="text-box">
+        <div class="status-code">
+            <p id="field1">Go</p>
+        </div>
+        <div class="text">
+            <p class="text__error" id="start" onclick="start()">开始点名!</p>
+        </div>
+    </div>
+</body>
+
+</html>
