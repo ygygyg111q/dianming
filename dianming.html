@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,27 +6,35 @@
     <title>群點名</title>
     <script>
         //total 是闪动总次数
-        const TOTAL = 5;
+        var TOTAL = 5;
         //interval 是闪动间隔 1000 = 1s
-        const INTERVAL = 1000;
+        var INTERVAL = 1000;
         //changecolor_interval 是背景色变化的间隔 1000 = 1s
-        const CHANGECOLOR_INTERCAL = 500;
+        var CHANGECOLOR_INTERCAL = 500;
         var changeback = 0;
         var lifetime = TOTAL + 1;
         var colors = ["#FF0000", "#FF00FF", "#FF1493", "#EF0000", "#EE3A8C", "#EE82E"]
         var t1 = setInterval(dorandom, INTERVAL);
         var t2 = setInterval(changeBackColor, CHANGECOLOR_INTERCAL);
+        //通过 users.push("名字"); 增加成员； 同一成员多次加入，可提升概率。名字长度尽量少于7个字
+        var users = [];
+        users.push("ygy");
+        users.push("ygy");
+        users.push("33");
+        users.push("萌豚");
+        users.push("ob");
+        users.push("念念");
+        users.push("狗哥");
+        users.push("狗哥");
+        users.push("狗哥");
+        users.push("狗哥");
+        users.push("狗哥");
+        users.push("狗哥");
+        users.push("狗哥");
+        users.push("狐狸崽");
         function dorandom() {
-            //通过 users.push("名字"); 增加成员； 同一成员多次加入，可提升概率。名字长度尽量少于7个字
-            var users = [];
-            users.push("ygy");
-            users.push("33");
-            users.push("萌豚");
-            users.push("ob");
-            users.push("念念");
-            users.push("狗哥");
-            users.push("狐狸崽");
             var num = Math.floor(Math.random() * users.length);
+            console.log(lifetime);
             if (lifetime == TOTAL + 1) {
                 return;
             }
@@ -57,6 +65,107 @@
             }
         }
 
+        function cancel() {
+            document.getElementById("d2").style.display = "none";
+            document.getElementById("d1").style.display = "none";
+            console.log("您点击了取消");
+        }
+
+        function showSetting() {
+            let d2 = document.getElementById("d2");
+            d2.style.display = "block";
+            let d1 = document.getElementById("d1");
+            d1.style.display = "block";
+            document.getElementById("flashCount").placeholder = "请输入闪动次数 当前为：" + TOTAL;
+            document.getElementById("flashInterval").placeholder = "请输入闪动间隔 当前为：" + INTERVAL;
+            document.getElementById("colorInterval").placeholder = "请输入背景色变化间隔 当前为：" + CHANGECOLOR_INTERCAL;
+        }
+
+        function showMember() {
+            var members = {};
+            var str = "成员及概率\n";
+            for (var i = 0; i < users.length; i++) {
+                if (members[users[i]] == null) {
+                    members[users[i]] = 1;
+                } else {
+                    members[users[i]]++;
+                }
+            }
+            //console.log(members);
+            for (var prop in members) {
+                var s = members[prop];
+                var x = members[prop] / users.length * 100;
+                x = x.toFixed(2);
+                str = str + prop + "     " + x + "% \n";
+            }
+            alert(str);
+
+        }
+        function isNumber(val) {
+            var regPos = /^\d+(\.\d+)?$/;
+            var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/;
+            if (regNeg.test(val) || regPos.test(val)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function confirm() {
+            var flashCount = document.getElementById("flashCount").value;
+            var flashInterval = document.getElementById("flashInterval").value;
+            var colorInterval = document.getElementById("colorInterval").value;
+            var isChange = false;
+            var colorIsChange = false;
+            var countIssValid = true;
+            var intervalIssValid = true;
+            var colorIssValid = true;
+
+            if (isNumber(flashCount)) {
+                isChange = true;
+                TOTAL = Number(flashCount);
+                lifetime = Number(TOTAL) + 1;
+            } else if (flashCount != null && flashCount != "") {
+                //alert(1111);
+                console.log(flashCount);
+                countIssValid = false;
+            }
+
+            if (isNumber(flashInterval)) {
+                isChange = true;
+                INTERVAL = flashInterval;
+            } else if (flashInterval != null && flashInterval != "") {
+                console.log(flashInterval);
+                intervalIssValid = false;
+            }
+
+            if (isNumber(colorInterval)) {
+                colorIsChange = true;
+                CHANGECOLOR_INTERCAL = colorInterval;
+            } else if (colorInterval != null && colorInterval != "") {
+                colorIssValid = false;
+            }
+            var totalstr = countIssValid ? "" : "闪动次数输入不规范;";
+            var intervalstr = intervalIssValid ? "" : "闪动间隔输入不规范;";
+            var colorstr = colorIssValid ? "" : "背景色变化间隔输入不规范;";
+            var warn = totalstr + intervalstr + colorstr;
+            if(warn.length>0){
+                alert(warn);
+                return;
+            }
+
+            if (isChange) {
+                clearInterval(t1);
+                t1 = setInterval(dorandom, INTERVAL);
+            }
+            if (colorIsChange) {
+                clearInterval(t2);
+                t2 = setInterval(changeBackColor, CHANGECOLOR_INTERCAL);
+            }
+            document.getElementById("d2").style.display = "none";
+            document.getElementById("d1").style.display = "none";
+        }
+
     </script>
     <style type="text/css">
         html {
@@ -85,6 +194,7 @@
 
         .status-code {
             position: relative;
+            z-index: 1;
             justify-content: space-between;
             width: 1000px;
             height: 300px;
@@ -93,11 +203,117 @@
             margin: auto;
         }
 
+        #d1 {
+            width: 300px;
+            height: 250px;
+            z-index: 5;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: -150px;
+            margin-top: -125px;
+            display: none;
+
+
+            overflow: hidden;
+            background-color: white;
+
+        }
+
+        #d2 {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            opacity: 0.8;
+            background-color: grey;
+            display: none;
+
+        }
+
         .status-code p {
             font-size: 150px;
             color: #fefefe;
             opacity: 0.8;
             text-align: center;
+        }
+
+        .setting_div {
+            position: relative;
+            justify-content: flex-end;
+            text-align: right;
+        }
+
+        .setting_div p {
+            font-size: 20px;
+            color: #fefefe;
+            opacity: 0.8;
+        }
+
+        .text {
+            z-index: 1;
+        }
+
+        .top {
+            width: 90%;
+            height: 20px;
+            margin: 2px auto;
+        }
+
+        .top a {
+            float: right;
+            margin-right: 2px;
+            text-decoration: none;
+            color: #3A3C3D;
+            opacity: 0.5;
+        }
+
+        .top a:hover {
+            opacity: 1;
+        }
+
+        .number {
+            display: block;
+            width: 90%;
+            height: 30px;
+            margin: 20px auto;
+            border: solid 1px #248CD6;
+            border-radius: 5px;
+            outline: none;
+            padding-left: 5px;
+        }
+
+        .number1 {
+            display: block;
+            width: 90%;
+            height: 30px;
+            margin: 40px auto;
+            border: solid 1px #248CD6;
+            border-radius: 5px;
+            outline: none;
+            padding-left: 5px;
+        }
+
+        #number:focus {
+            border: solid 1px #248CD6;
+            border-radius: 5px;
+            box-shadow: 0 0 8px #248CD6;
+        }
+
+        .cancel,
+        .confirm {
+            flex: 1;
+            margin: 2px;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .cancel:hover,
+        .confirm:hover {
+            background-color: #248CD6;
+            color: white;
         }
     </style>
 </head>
@@ -105,6 +321,25 @@
 <body id="back">
 
     <div class="text-box">
+        <div class="setting_div">
+            <p onclick="showSetting()">设置</p>
+        </div>
+
+        <div id="d2"></div>
+        <div id="d1">
+            <div class="top">
+                <a href="javascript:void(0)" onclick="cancel()">&#935;</a>
+            </div>
+            <input type="text" id="flashCount" class="number" placeholder="请输入闪动次数" id="number">
+            <input type="text" id="flashInterval" class="number" placeholder="请输入闪动间隔" id="number">
+            <input type="text" id="colorInterval" class="number" placeholder="请输入背景色变化间隔" id="number">
+            <div class="submit">
+                <button class="cancel" onclick="showMember()">查看名单</button>
+                <button class="confirm" onclick="confirm()">确定</button>
+                <button class="cancel" onclick="cancel()">取消</button>
+            </div>
+        </div>
+
         <div class="status-code">
             <p id="field1">Go</p>
         </div>
