@@ -18,20 +18,29 @@
         var t2 = setInterval(changeBackColor, CHANGECOLOR_INTERCAL);
         //通过 users.push("名字"); 增加成员； 同一成员多次加入，可提升概率。名字长度尽量少于7个字
         var users = [];
-        users.push("ygy");
-        users.push("ygy");
-        users.push("33");
-        users.push("萌豚");
-        users.push("ob");
-        users.push("念念");
-        users.push("狗哥");
-        users.push("狗哥");
-        users.push("狗哥");
-        users.push("狗哥");
-        users.push("狗哥");
-        users.push("狗哥");
-        users.push("狗哥");
-        users.push("狐狸崽");
+        function init1() {
+            var initFlag = localStorage.getItem("initFlag");
+            if (initFlag != "yes") {
+                localStorage.setItem("initFlag", "yes");
+                localStorage.setItem("memberCount", 0);
+                //localStorage.setItem(localStorage.memberCount, "33");
+
+                // localStorage.memberCount = Number(localStorage.memberCount) + 1;
+                // localStorage.setItem(localStorage.memberCount, "ygy");
+
+                // localStorage.memberCount = Number(localStorage.memberCount) + 1;
+                // localStorage.setItem(localStorage.memberCount, "狗哥");
+
+                // localStorage.memberCount = Number(localStorage.memberCount) + 1;
+                // localStorage.setItem(localStorage.memberCount, "念念");
+            }
+            var memberNum = Number(localStorage.memberCount);
+            users = [];
+            for (var i = 1; i < memberNum + 1; i++) {
+                var item = localStorage.getItem(i);
+                users.push(item);
+            }
+        }
         function dorandom() {
             var num = Math.floor(Math.random() * users.length);
             console.log(lifetime);
@@ -70,6 +79,11 @@
             document.getElementById("d1").style.display = "none";
             console.log("您点击了取消");
         }
+        function cancel1() {
+            document.getElementById("d2").style.display = "none";
+            document.getElementById("d3").style.display = "none";
+            console.log("您点击了取消");
+        }
 
         function showSetting() {
             let d2 = document.getElementById("d2");
@@ -80,8 +94,27 @@
             document.getElementById("flashInterval").placeholder = "请输入闪动间隔 当前为：" + INTERVAL;
             document.getElementById("colorInterval").placeholder = "请输入背景色变化间隔 当前为：" + CHANGECOLOR_INTERCAL;
         }
+        function showSetting1() {
+            let d2 = document.getElementById("d2");
+            d2.style.display = "block";
+            let d3 = document.getElementById("d3");
+            d3.style.display = "block";
+        }
+
+        function retInit() {
+            var r = confirm("确定要初始化吗，该操作会删除所有已添加成员!");
+            if (r == true) {
+                localStorage.clear();
+                init1();
+            }
+            else {
+                //return;;
+            }
+
+        }
 
         function showMember() {
+            console.log(users);
             var members = {};
             var str = "成员及概率\n";
             for (var i = 0; i < users.length; i++) {
@@ -111,7 +144,7 @@
             }
         }
 
-        function confirm() {
+        function confirmNew() {
             var flashCount = document.getElementById("flashCount").value;
             var flashInterval = document.getElementById("flashInterval").value;
             var colorInterval = document.getElementById("colorInterval").value;
@@ -149,7 +182,7 @@
             var intervalstr = intervalIssValid ? "" : "闪动间隔输入不规范;";
             var colorstr = colorIssValid ? "" : "背景色变化间隔输入不规范;";
             var warn = totalstr + intervalstr + colorstr;
-            if(warn.length>0){
+            if (warn.length > 0) {
                 alert(warn);
                 return;
             }
@@ -164,6 +197,49 @@
             }
             document.getElementById("d2").style.display = "none";
             document.getElementById("d1").style.display = "none";
+        }
+
+        function confirm1() {
+            document.getElementById("d2").style.display = "none";
+            document.getElementById("d3").style.display = "none";
+        }
+
+        function addMember() {
+            var memberName = document.getElementById("modifyMember").value;
+            if (memberName == null || memberName == "") {
+                alert("添加成员不能为空！");
+                return;
+            }
+            localStorage.memberCount = Number(localStorage.memberCount) + 1;
+            localStorage.setItem(localStorage.memberCount, memberName);
+            init1();
+            document.getElementById("modifyMember").value = null;
+        }
+
+        function deleteMember() {
+            var memberName = document.getElementById("modifyMember").value;
+            if (memberName == null || memberName == "") {
+                alert("删除成员不能为空！");
+                return;
+            }
+            var memberNum = localStorage.memberCount;
+            var deleteFlag = true;
+            for (var i = 0; i < memberNum + 1; i++) {
+                var getName = localStorage.getItem(i);
+                if (memberName == getName) {
+                    deleteFlag = false;
+                    localStorage.removeItem(i);
+                    localStorage.memberCount = Number(localStorage.memberCount) - 1;
+                }
+            }
+
+            if (deleteFlag) {
+                alert("不存在该成员！");
+                document.getElementById("modifyMember").value = null;
+                return;
+            }
+            init1();
+            document.getElementById("modifyMember").value = null;
         }
 
     </script>
@@ -230,6 +306,23 @@
             opacity: 0.8;
             background-color: grey;
             display: none;
+
+        }
+
+        #d3 {
+            width: 300px;
+            height: 180px;
+            z-index: 5;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: -150px;
+            margin-top: -90px;
+            display: none;
+
+
+            overflow: hidden;
+            background-color: white;
 
         }
 
@@ -318,11 +411,12 @@
     </style>
 </head>
 
-<body id="back">
+<body id="back" onload="init1()">
 
     <div class="text-box">
         <div class="setting_div">
-            <p onclick="showSetting()">设置</p>
+            <p onclick="showSetting()">参数设置</p>
+            <p onclick="showSetting1()">成员管理</p>
         </div>
 
         <div id="d2"></div>
@@ -334,9 +428,22 @@
             <input type="text" id="flashInterval" class="number" placeholder="请输入闪动间隔" id="number">
             <input type="text" id="colorInterval" class="number" placeholder="请输入背景色变化间隔" id="number">
             <div class="submit">
-                <button class="cancel" onclick="showMember()">查看名单</button>
-                <button class="confirm" onclick="confirm()">确定</button>
+
+                <button class="confirm" onclick="confirmNew()">确定</button>
                 <button class="cancel" onclick="cancel()">取消</button>
+            </div>
+        </div>
+
+        <div id="d3">
+            <div class="top">
+                <a href="javascript:void(0)" onclick="cancel1()">&#935;</a>
+            </div>
+            <input type="text" id="modifyMember" class="number" placeholder="请输入成员名称" id="number">
+            <div class="submit">
+                <button class="cancel" onclick="showMember()">查看名单</button>
+                <button class="confirm" onclick="addMember()">添加成员</button>
+                <button class="cancel" onclick="deleteMember()">删除成员</button>
+                <button class="cancel" onclick="retInit()">恢复初始化</button>
             </div>
         </div>
 
